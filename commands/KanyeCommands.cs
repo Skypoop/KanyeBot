@@ -13,6 +13,13 @@ namespace bot_test.commands
             string kanyeQuote = await KanyeRestClient.GetKanyeQuote();
             await ctx.RespondAsync(kanyeQuote);
         }
+
+        [Command("kanye-roast")]
+        public async Task KanyeRoast(CommandContext ctx)
+        {
+            string kanyeRoast = await Program.OllamaApiClient.GenerateAsync("dolphin-mistral", "-- enter prompt --");
+            await ctx.RespondAsync(kanyeRoast);
+        }
         //[Command("kanye")]
         //public async Task Kanye(CommandContext ctx)
         //{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using bot_test.api;
 using bot_test.commands;
 using bot_test.config;
 using DSharpPlus;
@@ -16,11 +17,13 @@ namespace bot_test
         private static DiscordClient Client { get; set; }
         private static CommandsNextExtension Commands { get; set; }
         private static SlashCommandsExtension SlashCommands { get; set; }
+        public static OllamaApiClient OllamaApiClient { get; set; } 
 
         static async Task Main(string[] args)
         {
             var jsonReader = new JSONReader();
             await jsonReader.ReadJSON();
+            OllamaApiClient = new OllamaApiClient();
 
             var discordConfig = new DiscordConfiguration()
             {

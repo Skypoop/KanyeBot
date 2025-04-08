@@ -148,6 +148,7 @@
     <Compile Include="commands\KanyeCommands.cs" />
     <Compile Include="config\JSONReader.cs" />
     <Compile Include="KanyeRestClient.cs" />
+    <Compile Include="OllamaApiClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
