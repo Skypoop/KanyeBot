@@ -2,6 +2,8 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using bot_test;
+using System.IO;
+using System;
 
 namespace bot_test.commands
 {
@@ -17,7 +19,10 @@ namespace bot_test.commands
         [Command("kanye-roast")]
         public async Task KanyeRoast(CommandContext ctx)
         {
-            string kanyeRoast = await Program.OllamaApiClient.GenerateAsync("dolphin-mistral", "-- enter prompt --");
+            Console.WriteLine("Reading prompt");
+            string prompt = File.ReadAllText("prompt.txt");
+            Console.WriteLine($"Prompt length: {prompt.Length}");
+            string kanyeRoast = await Program.OllamaApiClient.GenerateAsync("dolphin-mistral", prompt);
             await ctx.RespondAsync(kanyeRoast);
         }
         //[Command("kanye")]
