@@ -4,24 +4,25 @@ namespace KanyeBot
 {
     internal class JSONReader
     {
-        public string token { get; set; }
-        public string prefix { get; set; }
+        public required string Token { get; set; }
+        public required string Prefix { get; set; }
 
-        public async Task ReadJSON()
+        public static async Task<JSONReader> LoadAsync(string path = "config.json")
         {
-            using (StreamReader sr = new StreamReader("config.json"))
-            {
-                string json = await sr.ReadToEndAsync();
-                JSONStructure structure = JsonConvert.DeserializeObject<JSONStructure>(json);
-                this.token = structure.token;
-                this.prefix = structure.prefix;
-            }
-        }
-    }
+            var configPath = Path.GetFullPath(path, AppContext.BaseDirectory);
 
-    internal sealed class JSONStructure
-    {
-        public string token { get; set; }
-        public string prefix { get; set; }
+            if (!File.Exists(configPath))
+            {
+                throw new FileNotFoundException($"Configuration file not found: {configPath}");
+            }
+
+            using StreamReader sr = new(configPath);
+            var json = await sr.ReadToEndAsync();
+
+            var config = JsonConvert.DeserializeObject<JSONReader>(json)
+                         ?? throw new Exception("Failed to deserialize JSON");
+
+            return config;
+        }
     }
 }
