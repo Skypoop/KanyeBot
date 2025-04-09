@@ -36,12 +36,16 @@ public class KanyeSlashCommands : ApplicationCommandModule
         try
         {
             var prompt = File.ReadAllText("prompt.txt");
-            var kanyeRoast = await Program.OllamaApiClient.GenerateAsync("dolphin-mistral", prompt);
             await itx.CreateResponseAsync(
-                InteractionResponseType.ChannelMessageWithSource,
-                new DiscordInteractionResponseBuilder()
-                    .WithContent(kanyeRoast)
+                InteractionResponseType.DeferredChannelMessageWithSource
             );
+
+            var kanyeRoast = await Program.OllamaApiClient.GenerateAsync("dolphin-mistral", prompt);
+
+            await itx.EditResponseAsync(
+                new DiscordWebhookBuilder()
+                    .WithContent(kanyeRoast)
+                );
         }
         catch (Exception ex)
         {
