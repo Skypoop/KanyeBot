@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 
-namespace bot_test.config
+namespace KanyeBot
 {
     internal class JSONReader
     {
@@ -17,7 +12,7 @@ namespace bot_test.config
             using (StreamReader sr = new StreamReader("config.json"))
             {
                 string json = await sr.ReadToEndAsync();
-                JSONStructure structure = Newtonsoft.Json.JsonConvert.DeserializeObject<JSONStructure>(json);
+                JSONStructure structure = JsonConvert.DeserializeObject<JSONStructure>(json);
                 this.token = structure.token;
                 this.prefix = structure.prefix;
             }
