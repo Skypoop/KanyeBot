@@ -31,7 +31,14 @@ namespace KanyeBot
 
             var json = await response.Content.ReadAsStringAsync();
             var jsons = JObject.Parse(json)["models"];
-            models = jsons?.ToObject<JArray>()?.Select(m => m["name"]?.ToString())?.ToArray() ?? models;
+
+            // using linq queries, see:
+            // https://learn.microsoft.com/en-us/dotnet/csharp/linq/get-started/introduction-to-linq-queries
+            var m =
+              from j in jsons?.ToObject<JArray>()
+              where (j["name"]?.ToString() is not null)
+              select j["name"]?.ToString();
+            models = m.ToArray();
             return models;
         }
 
