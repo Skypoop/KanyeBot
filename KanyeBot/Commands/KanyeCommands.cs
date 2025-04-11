@@ -26,9 +26,8 @@ namespace KanyeBot.Commands
                 return;
             }
 
-            var prompt = File.ReadAllText("prompt.txt");
             Console.WriteLine("Asking kanye...");
-            var kanyeRoast = await Program.OllamaApiClient.GenerateAsync("dolphin-mistral", prompt);
+            var kanyeRoast = await Program.OllamaApiClient.GenerateTweetAsync("dolphin-mistral");
             Console.WriteLine("Kanye has answered");
             await ctx.RespondAsync(kanyeRoast);
         }
