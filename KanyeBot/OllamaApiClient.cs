@@ -17,12 +17,29 @@ namespace KanyeBot
 
         public async Task<string[]> ListModelsAsync()
         {
-            var response = await _httpClient.GetAsync($"{_baseUrl}/api/tags");
-            response.EnsureSuccessStatusCode();
+            string[] models = Array.Empty<string>();
+
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_baseUrl}/api/tags");
+
+            try
+            {
+              response.EnsureSuccessStatusCode();
+            } catch (HttpRequestException e) {
+              Console.WriteLine($"Ollama http request failed: {e.Message}");
+              return models;
+            }
 
             var json = await response.Content.ReadAsStringAsync();
-            var models = JObject.Parse(json)["models"];
-            return models?.ToObject<JArray>()?.Select(m => m["name"]?.ToString())?.ToArray() ?? Array.Empty<string>();
+            var jsons = JObject.Parse(json)["models"];
+
+            // using linq queries, see:
+            // https://learn.microsoft.com/en-us/dotnet/csharp/linq/get-started/introduction-to-linq-queries
+            var m =
+              from j in jsons?.ToObject<JArray>()
+              where (j["name"]?.ToString() is not null)
+              select j["name"]?.ToString();
+            models = m.ToArray();
+            return models;
         }
 
         public async Task<string> GenerateAsync(string model, string prompt)
