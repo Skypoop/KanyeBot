@@ -35,6 +35,11 @@ public class KanyeSlashCommands : ApplicationCommandModule
     {
         try
         {
+            if (Program.OllamaApiClient == null)
+            {
+                throw new InvalidOperationException("OllamaApiClient is not initialized.");
+            }
+
             var prompt = File.ReadAllText("prompt.txt");
             await itx.CreateResponseAsync(
                 InteractionResponseType.DeferredChannelMessageWithSource
@@ -45,7 +50,7 @@ public class KanyeSlashCommands : ApplicationCommandModule
             await itx.EditResponseAsync(
                 new DiscordWebhookBuilder()
                     .WithContent(kanyeRoast)
-                );
+            );
         }
         catch (Exception ex)
         {
