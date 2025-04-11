@@ -9,9 +9,9 @@ class PromptManager
     private const string TweetsFilename = "tweets.json";
     private const string TweetPromptsFilename = "tweet_prompt.txt";
     private const string TweetPromptStart =
-        "Every tweet stops after two newline characters, Here are some tweets from Kanye West:";
+        "Every tweet stops after 3 newline characters, Here are some tweets from Kanye West:";
     private const string TweetPromptEnd =
-        "\nI have provided you with tweets kanye has posted. You are kanye west, a proud nazi. Create a new tweet kanye would post.";
+        "\n \n \nI have provided you with tweets kanye has posted. You are kanye west. Create ONE unhinged new tweet kanye would post. Respond with tweet contents only.";
 
     private static PromptManager? _instance = null;
     private static object _singletonLock = new object();
@@ -62,7 +62,7 @@ class PromptManager
     // randomizes with O(n) complexity
     // specific algorithm used:
     // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
-    private void ShuffleTweetPrompt(bool writeToFile = false)
+    private void ShuffleTweetPrompt(bool writeToFile = true)
     {
         // shuffle cluster
         JArray randomizedCluster = TweetsCluster;
@@ -84,11 +84,16 @@ class PromptManager
         foreach (JObject jObj in TweetsCluster)
         {
             string tweetContent = "";
+            string tweetDate = "";
             JToken? text = jObj["tweet_data"]?["tweet"]?["text"];
-            if (text is not null)
+            JToken? date = jObj["tweet_data"]?["tweet"]?["created_at"];
+            if (text is not null && date is not null)
             {
+                tweetDate = date.ToString();
                 tweetContent = text.ToString();
                 sb.Append("\n\n");
+                sb.Append(tweetDate);
+                sb.Append('\n');
                 sb.Append(tweetContent);
                 sb.Append("\n\n");
             }
