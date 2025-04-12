@@ -47,6 +47,11 @@ namespace KanyeBot
             return await GenerateAsync(model, PromptManager.Instance.RandomizedTweetPrompt);
         }
 
+        public async Task<string> GenerateResponseAsync(string model, string question)
+        {
+            return await GenerateAsync(model, PromptManager.Instance.RandomizedTweetsAskKanyePrompt(question));
+        }
+
         public async Task<string> GenerateAsync(string model, string prompt)
         {
             var requestBody = new

@@ -12,6 +12,10 @@ class PromptManager
         "Every tweet stops after 3 newline characters, Here are some tweets from Kanye West:";
     private const string TweetPromptEnd =
         "\n \n \nI have provided you with tweets kanye has posted. You are kanye west. Create ONE unhinged new tweet kanye would post. Respond with tweet contents only.";
+    private const string AskKanyePromptStart =
+        "Every tweet stops after 3 newline characters, Here are some tweets from Kanye West:\n";
+    private const string AskKanyePromptEnd =
+        "\n \n \nI have provided you with tweets kanye has posted. You are Kanye West. Respond unhinged to the following question:";
 
     private static PromptManager? _instance = null;
     private static object _singletonLock = new object();
@@ -39,7 +43,14 @@ class PromptManager
         }
     }
 
+    public string RandomizedTweetsAskKanyePrompt(string question)
+    {
+        ShuffleTweetAskKanyePrompt();
+        return $"{AskKanyePrompt} {question}";
+    }
+
     private string TweetPrompt { get; set; }
+    private string AskKanyePrompt { get; set; }
     private JArray TweetsCluster { get; init; }
     private Random Rng { get; init; }
 
@@ -47,6 +58,7 @@ class PromptManager
     {
         Rng = new Random();
         TweetPrompt = "";
+        AskKanyePrompt = "";
         using (StreamReader jsonFile = File.OpenText(TweetsFilename))
         {
             JToken json = JToken.ReadFrom(new JsonTextReader(jsonFile));
@@ -80,7 +92,63 @@ class PromptManager
         }
 
         // build prompt
-        StringBuilder sb = new StringBuilder(TweetPromptStart);
+        StringBuilder sb = GetTweets();
+        sb.Insert(0, $"{TweetPromptStart}\n");
+        sb.Append(TweetPromptEnd);
+
+        // assign prompt
+        TweetPrompt = sb.ToString();
+
+        // optionally write to file
+        if (writeToFile == false)
+            return;
+        else
+        {
+            string promptsPath = Path.Combine(Environment.CurrentDirectory, TweetPromptsFilename);
+            using (StreamWriter promptsFile = new StreamWriter(path: promptsPath, append: false))
+                promptsFile.Write(TweetPrompt);
+        }
+    }
+
+    private void ShuffleTweetAskKanyePrompt(bool writeToFile = true)
+    {
+        // shuffle cluster
+        JArray randomizedCluster = TweetsCluster;
+        int i = randomizedCluster.Count;
+        while (i > 1)
+        {
+            i--;
+            // roll
+            int k = Rng.Next(maxValue: i + 1);
+
+            // swap random element and iterating element
+            JToken tokenK = randomizedCluster[k];
+            randomizedCluster[k] = randomizedCluster[i];
+            randomizedCluster[i] = tokenK;
+        }
+
+        // build prompt
+        StringBuilder sb = GetTweets();
+        sb.Insert(0, AskKanyePromptStart);
+        sb.Append(AskKanyePromptEnd);
+
+        // assign prompt
+        AskKanyePrompt = sb.ToString();
+
+        // optionally write to file
+        if (writeToFile == false)
+            return;
+        else
+        {
+            string promptsPath = Path.Combine(Environment.CurrentDirectory, TweetPromptsFilename);
+            using (StreamWriter promptsFile = new StreamWriter(path: promptsPath, append: false))
+                promptsFile.Write(TweetPrompt);
+        }
+    }
+
+    private StringBuilder GetTweets()
+    {
+        StringBuilder sb = new StringBuilder();
         foreach (JObject jObj in TweetsCluster)
         {
             string tweetContent = "";
@@ -98,23 +166,12 @@ class PromptManager
                 sb.Append("\n\n");
             }
             else
+            {
                 Console.WriteLine(
-                    $"ERROR: tried to retrieve tweet content in {this}.{nameof(ShuffleTweetPrompt)}, but found null!"
+                    $"ERROR: tried to retrieve tweet content in {this}.{nameof(GetTweets)}, but found null!"
                 );
+            }
         }
-        sb.Append(TweetPromptEnd);
-
-        // assign prompt
-        TweetPrompt = sb.ToString();
-
-        // optionally write to file
-        if (writeToFile == false)
-            return;
-        else
-        {
-            string promptsPath = Path.Combine(Environment.CurrentDirectory, TweetPromptsFilename);
-            using (StreamWriter promptsFile = new StreamWriter(path: promptsPath, append: false))
-                promptsFile.Write(TweetPrompt);
-        }
+        return sb;
     }
 }
