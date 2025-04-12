@@ -15,7 +15,7 @@ class PromptManager
     private const string AskKanyePromptStart =
         "Every tweet stops after 3 newline characters, Here are some tweets from Kanye West:\n";
     private const string AskKanyePromptEnd =
-        "\n \n \nI have provided you with tweets kanye has posted. You are Kanye West. Respond unhinged to the following question:";
+        "\n \n \nI have provided you with tweets kanye has posted. You are Kanye West. A proud nazi. Respond extremely unhinged to the following question, make sure not to respond in tweet form, so don't use @s or # anything:";
 
     private static PromptManager? _instance = null;
     private static object _singletonLock = new object();
